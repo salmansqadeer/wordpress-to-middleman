@@ -1,3 +1,4 @@
 # Ignore Wordpress XML Source #
 
-wordpress.xml
+*.xml
+export/

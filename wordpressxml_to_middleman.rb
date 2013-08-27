@@ -7,16 +7,19 @@ require 'nokogiri'
 require 'time'
 require 'fileutils'
 
-# SETTINGS 
-WORDPRESS_XML_FILE_PATH = "#{ENV['PWD']}/wordpress.xml"
-OUTPUT_PATH = "#{ENV['PWD']}/export/_posts/"
-ORIGINAL_DOMAIN = "http://perpetuallybeta.com"
+# SETTINGS #
+WORDPRESS_XML_FILE_PATH = "#{ENV['PWD']}/wordpress.xml"  # THE LOCATION OF THE EXPORTED WORDPRESS ARCHIVE #
+OUTPUT_PATH = "#{ENV['PWD']}/export/_posts/"  # THE LOCATION OF THE SAVED POSTS #
+ORIGINAL_DOMAIN = "http://perpetuallybeta.com"  #  THE DOMAIN OF THE WEBSITE #
 
-unless File.directory?(OUTPUT_PATH)
-    FileUtils.mkdir_p(OUTPUT_PATH)
-end
 
 class Parser
+
+	def self.make_save_path
+		unless File.directory?(OUTPUT_PATH)
+    		FileUtils.mkdir_p(OUTPUT_PATH)
+		end
+	end
 
 	def self.xml_to_hash
 		xml = Nokogiri::HTML(open(WORDPRESS_XML_FILE_PATH))
@@ -50,13 +53,12 @@ class Parser
 				end
 
 			end
-
-			break;
+			break;  # DELETE THIS TO PARSE ALL FILES 
 		end
 	end
-
 end
 
+Parser.make_save_path
 Parser.xml_to_hash
 
 
