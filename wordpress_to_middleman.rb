@@ -5,6 +5,7 @@
 require 'rubygems'
 require 'nokogiri' 
 require 'upmark'   
+require 'html2md'
 require 'time'
 require 'fileutils'
 
@@ -28,7 +29,6 @@ class Parser
 		
 		posts.each do |post|
 			title = post.css("title").text
-			title = sanitize_filename(title)
 			puts title
 			post_date = post.css("post_date").first.inner_text
 			created_at = Date.parse(post_date).to_s
@@ -42,13 +42,18 @@ class Parser
 
 			content = post.css("encoded").to_s
 
-			# Cleaning up the output of content
+			# Cleaning up the HTML output of content
 			content.gsub!("<encoded>", " ")
 			content.gsub!("</encoded>", " ")
 			content.gsub!("]]&gt;", " ")
 
+			# Converting HTML output to Markdown
+			# Comment out these lines if you would like to maintain your HTML post formatting.
+			# md_content = Html2Md.new(content)
+			# content = md_content.parse
+
 			if (post.css("status").text == "publish")
-				output_filename = OUTPUT_PATH + created_at + "-" + title + ".markdown"
+				output_filename = OUTPUT_PATH + created_at + "-" + sanitize_filename(title) + ".markdown"
 				puts output_filename
 
 				file_content = "---" + "\n"
@@ -63,7 +68,6 @@ class Parser
 				end
 
 			end
-			# break;  # DELETE THIS TO PARSE ALL FILES 
 		end
 	end
 
