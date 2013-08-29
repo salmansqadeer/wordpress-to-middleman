@@ -20,19 +20,24 @@ class Parser
 	def self.make_output_path
 		unless File.directory?(OUTPUT_PATH)
     		FileUtils.mkdir_p(OUTPUT_PATH)
+    		puts "Saving all files in" + OUTPUT_PATH.to_s
 		end
 	end
 
 	def self.xml_to_hash
-		xml = Nokogiri::HTML(open(WORDPRESS_XML_FILE_PATH))
+		# xml = Nokogiri::HTML(open(WORDPRESS_XML_FILE_PATH.gsub("CDATA", "")))
+		f = File.open(WORDPRESS_XML_FILE_PATH)
+		xml = Nokogiri::XML(f)
 		posts = xml.css("item")
 		
 		posts.each do |post|
+
+			# Parsing Post Frontmatter
+			# ------------------------------------
 			title = post.css("title").text
-			puts title
-			post_date = post.css("post_date").first.inner_text
+			title.gsub!(":", "-")
+			post_date = post.xpath("wp:post_date").first.inner_text
 			created_at = Date.parse(post_date).to_s
-			puts created_at
 
 			tags = ""
 			categories = post.xpath("category")
@@ -40,19 +45,25 @@ class Parser
         		tags += category.css("@nicename").text + ", "
   			end
 
-			content = post.css("encoded").to_s
+			# Parsing Post Content
+			# ------------------------------------
+			# content = post.at_xpath(".//content:encoded").to_s
+			content = post.at_xpath(".//content:encoded").inner_text
 
 			# Cleaning up the HTML output of content
-			content.gsub!("<encoded>", " ")
-			content.gsub!("</encoded>", " ")
-			content.gsub!("]]&gt;", " ")
-
+			# content.gsub!("<encoded>", " ")
+			# content.gsub!("</encoded>", " ")
+			# content.gsub!("&gt;", " ")
+			# content.gsub("<![CDATA[", " ")
+			# content.gsub!("]];", " ")
+			# content.gsub!("]]>;", " ")
+			
 			# Converting HTML output to Markdown
 			# Comment out these lines if you would like to maintain your HTML post formatting.
-			# md_content = Html2Md.new(content)
-			# content = md_content.parse
+				# md_content = Html2Md.new(content)
+				# content = md_content.parse
 
-			if (post.css("status").text == "publish")
+			if !(created_at.nil? || title.nil? || post_date.nil? || content.nil?)
 				output_filename = OUTPUT_PATH + created_at + "-" + sanitize_filename(title) + ".markdown"
 				puts output_filename
 
@@ -63,10 +74,11 @@ class Parser
 				file_content += "---" + "\n"
 				file_content += content
 
+				# Saving File
+				# ------------------------------------
 				File.open(output_filename, "w") do |f|     
-					f.write(file_content)   
+					f.write(file_content)
 				end
-
 			end
 		end
 	end

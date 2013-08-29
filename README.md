@@ -13,6 +13,13 @@ Getting Started
 2.  Ensure that all of the required gems are installed - two in specific that are required are:
 	- nokogiri
 	- upmark
+3.  Remove the following lines from the exported Wordpress XML (They mess with nokogiri's parser):
+		<!-- Debugging help, do not remove -->
+		<meta name="Framework" content="Kpress" />
+		<meta name="Theme Version" content="1.4.1" />
+		<meta name="Framework Version" content="1.4" />
+		<meta name="CMS Version" content="3.5.2" />
+
 3.  In the terminal, navigate to the folder where the project has been saved, and run 
 		ruby wordpress_to_middleman.rb
 
