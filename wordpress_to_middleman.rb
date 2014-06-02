@@ -34,6 +34,7 @@ class Parser
 
 			# Parsing Post Frontmatter
 			# ------------------------------------
+			filename = post.css("link").text.split('/').last
 			title = post.css("title").text
 			title.gsub!(":", "-")
 			post_date = post.xpath("wp:post_date").first.inner_text
@@ -64,7 +65,7 @@ class Parser
 				# content = md_content.parse
 
 			if !(created_at.nil? || title.nil? || post_date.nil? || content.nil?)
-				output_filename = OUTPUT_PATH + created_at + "-" + sanitize_filename(title) + ".markdown"
+				output_filename = OUTPUT_PATH + created_at + "-" + sanitize_filename(filename) + ".markdown"
 				puts output_filename
 
 				file_content = "---" + "\n"
@@ -86,7 +87,7 @@ class Parser
 	def self.sanitize_filename(filename)
 	    filename.gsub(/[^\w\s_-]+/, '')
 	            .gsub(/(^|\b\s)\s+($|\s?\b)/, '\\1\\2')
-	            .gsub(/\s+/, '_')
+	            .gsub(/\s+/, '-')
 	end
 
 end
