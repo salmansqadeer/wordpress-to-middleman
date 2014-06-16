@@ -100,9 +100,10 @@ class Parser
 	end
 
 	def self.sanitize_filename(filename)
-	    filename.gsub(/[^\w\s_-]+/, '')
-	            .gsub(/(^|\b\s)\s+($|\s?\b)/, '\\1\\2')
-	            .gsub(/\s+/, '_')
+		filename.gsub(/[^\w\s_-]+/, '')
+						.gsub(/(^|\b\s)\s+($|\s?\b)/, '\\1\\2')
+						.gsub(/\s+/, '_')
+						.downcase
 	end
 
 end
