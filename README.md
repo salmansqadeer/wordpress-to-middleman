@@ -10,6 +10,7 @@ Getting Started
 	- WORDPRESS_XML_FILE_PATH (The path to the exported wordpress.xml file)
 	- OUTPUT_PATH (The path where all of the markdown posts will be saved)
 	- ORIGINAL_DOMAIN (The domain of the original website)
+	- SEPARATE_CATEGORIES (List categories as its own YAML attribute. Defalut: `false` - all categories will be listed as tags)
 2.  Ensure that all of the required gems are installed - two in specific that are required are:
 	- nokogiri
 	- upmark
