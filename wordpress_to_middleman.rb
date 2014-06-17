@@ -13,8 +13,7 @@ require 'fileutils'
 WORDPRESS_XML_FILE_PATH = "#{ENV['PWD']}/wordpress.xml"  # THE LOCATION OF THE EXPORTED WORDPRESS ARCHIVE #
 OUTPUT_PATH = "#{ENV['PWD']}/export/_posts/"  # THE LOCATION OF THE SAVED POSTS #
 ORIGINAL_DOMAIN = "http://perpetuallybeta.com"  #  THE DOMAIN OF THE WEBSITE #
-SEPARATE_CATEGORIES = false
-
+APPEND_CATEGORIES = false
 
 class Parser
 
@@ -44,13 +43,10 @@ class Parser
 			categories = ""
 			category_xml = post.xpath("category")
 
-			if SEPARATE_CATEGORIES == true
+			if APPEND_CATEGORIES == true
 				category_xml.each do |category|
-					if category.css("@domain") == "post_tag"
-						tags += category.css("@nicename").text + ", "
-					else
-						categories += category.css("@nicename").text + ", "
-					end
+					categories += category.css("@nicename").text + ", " if category.css("@domain") == "category"
+					tags += category.css("@nicename").text + ", "
 				end
 			else
 				category_xml.each do |category|
@@ -84,7 +80,7 @@ class Parser
 				file_content += "title: " + title + "\n"
 				file_content += "date: " + post_date + "\n"
 				file_content += "tags: " + tags + "\n" unless tags.empty?
-				if SEPARATE_CATEGORIES == true
+				if APPEND_CATEGORIES == true
 					file_content += "categories: " + categories + "\n" unless categories.empty?
 				end
 				file_content += "---" + "\n"
