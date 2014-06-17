@@ -14,6 +14,7 @@ WORDPRESS_XML_FILE_PATH = "#{ENV['PWD']}/wordpress.xml"  # THE LOCATION OF THE E
 OUTPUT_PATH = "#{ENV['PWD']}/export/_posts/"  # THE LOCATION OF THE SAVED POSTS #
 ORIGINAL_DOMAIN = "http://perpetuallybeta.com"  #  THE DOMAIN OF THE WEBSITE #
 APPEND_CATEGORIES = false
+CONVERT_FROM_HTML = false
 
 class Parser
 
@@ -68,9 +69,12 @@ class Parser
 			# content.gsub!("]]>;", " ")
 			
 			# Converting HTML output to Markdown
-			# Comment out these lines if you would like to maintain your HTML post formatting.
-				# md_content = Html2Md.new(content)
-				# content = md_content.parse
+
+			# do a crude test for html tags
+			if CONVERT_FROM_HTML && /</ =~ content && />/ =~ content
+				md_content = Html2Md.new(content)
+				content = md_content.parse
+			end
 
 			if !(created_at.nil? || title.nil? || post_date.nil? || content.nil?)
 				output_filename = OUTPUT_PATH + created_at + "-" + sanitize_filename(title) + ".markdown"
