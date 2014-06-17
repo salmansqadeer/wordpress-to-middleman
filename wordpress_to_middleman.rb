@@ -75,9 +75,14 @@ class Parser
 
 			# do a crude test for html tags
 			if CONVERT_FROM_HTML && /</ =~ content && />/ =~ content
+				content.gsub!(/(\r?\n\r?\n)/, "XXXXXXXXXX") # preserve double newline as token
+				content.gsub!(/\n(<.+>)/, "<br><br>\\1") # add newline before html tags
 				md_content = Html2Md.new(content)
 				content = md_content.parse
+				content.gsub!(/(XXXXXXXXXX)+/, "\n\n") # remove token and replace with double newline
 			end
+
+			content.gsub! /\n\s*\n/, "\n\n" # collapse newlines
 
 			if !(created_at.nil? || title.nil? || post_date.nil? || content.nil?)
 				output_filename = OUTPUT_PATH + created_at + "-" + sanitize_filename(title) + ".markdown"
