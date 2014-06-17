@@ -11,9 +11,10 @@ Getting Started
 	- OUTPUT_PATH (The path where all of the markdown posts will be saved)
 	- ORIGINAL_DOMAIN (The domain of the original website)
 	- SEPARATE_CATEGORIES (List categories as its own YAML attribute. Defalut: `false` - all categories will be listed as tags)
-2.  Ensure that all of the required gems are installed - two in specific that are required are:
+2.  Ensure that all of the required gems are installed (Gemfile is included) - three in specific that are required are:
 	- nokogiri
 	- upmark
+	- html2md
 3.  Remove the following lines from the exported Wordpress XML (They mess with nokogiri's parser):
 		<!-- Debugging help, do not remove -->
 		<meta name="Framework" content="Kpress" />
