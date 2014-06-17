@@ -83,9 +83,9 @@ class Parser
 				file_content = "---" + "\n"
 				file_content += "title: " + title + "\n"
 				file_content += "date: " + post_date + "\n"
-				file_content += "tags: " + tags + "\n"
+				file_content += "tags: " + tags + "\n" unless tags.empty?
 				if SEPARATE_CATEGORIES == true
-					file_content += "categories: " + categories + "\n"
+					file_content += "categories: " + categories + "\n" unless categories.empty?
 				end
 				file_content += "---" + "\n"
 				file_content += content
