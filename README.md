@@ -1,7 +1,7 @@
 Wordpress to Middleman Exporter
 ===============================
 
-A Ruby Script that will convert your exported Wordpress XML into markdown files with the appropriate [frontmatter](http://middlemanapp.com/frontmatter/) metadata so that they are consumable by Middleman.
+A Ruby Script that will convert your exported Wordpress XML into markdown files with the appropriate [frontmatter](http://middlemanapp.com/basics/frontmatter/) metadata so that they are consumable by Middleman.
 
 Getting Started
 ----
