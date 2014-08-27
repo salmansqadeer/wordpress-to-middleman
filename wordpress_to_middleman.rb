@@ -13,7 +13,8 @@ require 'fileutils'
 WORDPRESS_XML_FILE_PATH = "#{ENV['PWD']}/wordpress.xml"  # THE LOCATION OF THE EXPORTED WORDPRESS ARCHIVE #
 OUTPUT_PATH = "#{ENV['PWD']}/export/_posts/"  # THE LOCATION OF THE SAVED POSTS #
 ORIGINAL_DOMAIN = "http://perpetuallybeta.com"  #  THE DOMAIN OF THE WEBSITE #
-
+SEPARATE_CATEGORIES_FROM_TAGS = false
+CONVERT_FROM_HTML = false
 
 class Parser
 
@@ -40,10 +41,22 @@ class Parser
 			created_at = Date.parse(post_date).to_s
 
 			tags = ""
-			categories = post.xpath("category")
-			categories.each do |category|
-        		tags += category.css("@nicename").text + ", "
-  			end
+			categories = ""
+			category_xml = post.xpath("category")
+
+			if SEPARATE_CATEGORIES_FROM_TAGS == true
+				category_xml.each do |category|
+					if category.css("@domain").to_s == "category"
+						categories += category.css("@nicename").text + ", "
+					else
+						tags += category.css("@nicename").text + ", "
+					end
+				end
+			else
+				category_xml.each do |category|
+					tags += category.css("@nicename").text + ", "
+				end
+			end
 
 			# Parsing Post Content
 			# ------------------------------------
@@ -59,9 +72,17 @@ class Parser
 			# content.gsub!("]]>;", " ")
 			
 			# Converting HTML output to Markdown
-			# Comment out these lines if you would like to maintain your HTML post formatting.
-				# md_content = Html2Md.new(content)
-				# content = md_content.parse
+
+			# do a crude test for html tags
+			if CONVERT_FROM_HTML && /</ =~ content && />/ =~ content
+				content.gsub!(/(\r?\n\r?\n)/, "XXXXXXXXXX") # preserve double newline as token
+				content.gsub!(/\n(<.+>)/, "<br><br>\\1") # add newline before html tags
+				md_content = Html2Md.new(content)
+				content = md_content.parse
+				content.gsub!(/(XXXXXXXXXX)+/, "\n\n") # remove token and replace with double newline
+			end
+
+			content.gsub! /\n\s*\n/, "\n\n" # collapse newlines
 
 			if !(created_at.nil? || title.nil? || post_date.nil? || content.nil?)
 				output_filename = OUTPUT_PATH + created_at + "-" + sanitize_filename(title) + ".markdown"
@@ -71,6 +92,9 @@ class Parser
 				file_content += "title: " + title + "\n"
 				file_content += "date: " + post_date + "\n"
 				file_content += "tags: " + tags + "\n"
+				if SEPARATE_CATEGORIES_FROM_TAGS == true
+					file_content += "categories: " + categories + "\n" unless categories.empty?
+				end
 				file_content += "---" + "\n"
 				file_content += content
 
@@ -84,9 +108,10 @@ class Parser
 	end
 
 	def self.sanitize_filename(filename)
-	    filename.gsub(/[^\w\s_-]+/, '')
-	            .gsub(/(^|\b\s)\s+($|\s?\b)/, '\\1\\2')
-	            .gsub(/\s+/, '_')
+		filename.gsub(/[^\w\s_-]+/, '')
+						.gsub(/(^|\b\s)\s+($|\s?\b)/, '\\1\\2')
+						.gsub(/\s+/, '_')
+						.downcase
 	end
 
 end
